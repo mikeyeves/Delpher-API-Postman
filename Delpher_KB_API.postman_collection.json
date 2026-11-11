@@ -1,0 +1,1126 @@
+{
+  "info": {
+    "_postman_id": "3f23f6cb-5017-489c-abd8-aff380c4d344",
+    "name": "Delpher / KB API (Netherlands)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "KB (National Library of the Netherlands) SRU API behind **Delpher**: historic newspapers, family notices, books, magazines and ANP bulletins. No key. Responses are XML.\n\nSRU: https://jsru.kb.nl/sru/sru · Resolver: https://resolver.kb.nl/resolve · Info: https://www.kb.nl/en/research-find/for-researchers/data-services-apis"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "★ Newspapers (DDD_artikel)",
+      "id": "3013af9b-d129-49b9-b590-8850cd604756",
+      "item": [
+        {
+          "name": "Newspaper articles — search",
+          "id": "fdc07ff5-7b4a-4132-bb1a-a6a0121f71f4",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}}&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Delpher newspapers, 1618 to about 1995: more than 100 million OCR'd articles from Dutch, Antillean, Surinamese and Indonesian papers."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Family notices (familiebericht)",
+          "id": "eeebcde1-c50c-4a51-a312-07ff20991fc1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} AND type=familiebericht&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} AND type=familiebericht",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Birth, marriage and death announcements (familieberichten), the main genealogy source in Delpher. \"Jansen\" alone returns about 300k."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Date range",
+          "id": "80934ad0-a219-4746-b2b8-5c65e85f017f",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} AND date within \"01-01-1900 31-12-1940\"&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} AND date within \"01-01-1900 31-12-1940\"",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Dates are dd-mm-yyyy."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "★ Exact phrase (place name)",
+          "id": "521c0d74-e650-45a2-ab6e-0ea26bdb7f54",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query=\"{{phrase}}\"&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "\"{{phrase}}\"",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Example: \"Groot Becskerek\" (Nagybecskerek / Zrenjanin) returned 24 articles."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Advertisements only",
+          "id": "66ec319b-1685-4a6a-a715-af88c45a14f5",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} AND type=advertentie&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} AND type=advertentie",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "One newspaper title",
+          "id": "1fe4f3cf-17a5-4340-a8b7-6428e31ad4b5",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} AND papertitle=\"{{paper}}\"&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} AND papertitle=\"{{paper}}\"",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "e.g. Algemeen Dagblad, De Telegraaf, NRC Handelsblad, Het vaderland"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Distribution area",
+          "id": "19846819-48b5-4451-abe8-0e980a5db4fa",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} AND spatial=Landelijk&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} AND spatial=Landelijk",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Landelijk (national) | Regionaal/lokaal | Nederlands-Indië / Indonesië | Suriname | Nederlandse Antillen | Verenigde Staten …"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sorted oldest first",
+          "id": "3e303593-b43c-4b01-99e3-4756e0c8d603",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DDD_artikel&recordSchema=ddd&query={{query}} sortBy date/sort.ascending&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DDD_artikel",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}} sortBy date/sort.ascending",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": ""
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": ""
+    },
+    {
+      "name": "Books, magazines, ANP",
+      "id": "597d6eb8-cad7-4ec4-b281-4abfbe8a8538",
+      "item": [
+        {
+          "name": "Books & magazines (DTS_document)",
+          "id": "13a7d97b-be2a-4a33-ba04-c9832a4c84bb",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=DTS_document&recordSchema=dc&query={{query}}&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "DTS_document",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "dc",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Digitized books and periodicals (Delpher \"Boeken\" and \"Tijdschriften\")."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Books (BOEKEN_boek)",
+          "id": "d9ceb1da-65d2-42c4-b5c5-43fe0ba7c40c",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=BOEKEN_boek&recordSchema=dc&query={{query}}&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "BOEKEN_boek",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "dc",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Google-scanned books and Basisbibliotheek titles."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ANP radio news bulletins 1937–1984",
+          "id": "ff10ecdd-d8f9-46a9-b332-50725cd24008",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_sru}}/sru/sru?version=1.2&operation=searchRetrieve&x-collection=ANP&recordSchema=dc&query={{query}}&maximumRecords=50&startRecord=1",
+              "host": [
+                "{{kb_sru}}"
+              ],
+              "path": [
+                "sru",
+                "sru"
+              ],
+              "query": [
+                {
+                  "key": "version",
+                  "value": "1.2",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "operation",
+                  "value": "searchRetrieve",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "x-collection",
+                  "value": "ANP",
+                  "disabled": false,
+                  "description": "DDD_artikel (newspaper articles) | DTS_document (books & magazines) | BOEKEN_boek | ANP (radio bulletins)"
+                },
+                {
+                  "key": "recordSchema",
+                  "value": "dc",
+                  "disabled": false,
+                  "description": "ddd | dc | dcx"
+                },
+                {
+                  "key": "query",
+                  "value": "{{query}}",
+                  "disabled": false,
+                  "description": "CQL query"
+                },
+                {
+                  "key": "maximumRecords",
+                  "value": "50",
+                  "disabled": false,
+                  "description": "max 1000"
+                },
+                {
+                  "key": "startRecord",
+                  "value": "1",
+                  "disabled": false,
+                  "description": "1-based"
+                }
+              ]
+            },
+            "description": "Typed radio news bulletins from the ANP press agency."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200',()=>pm.expect(pm.response.code).to.eql(200));",
+                  "const x=pm.response.text();",
+                  "const total=(x.match(/numberOfRecords>(\\d+)/)||[])[1]||'0';",
+                  "const g=(r,t)=>((r.match(new RegExp('<'+t+'[^>]*>([^<]*)<'))||[])[1]||'');",
+                  "const recs=x.split('<srw:record>').slice(1);",
+                  "const rows=recs.map(r=>{const key=g(r,'ddd:metadataKey');const ocr=g(r,'dc:identifier');const page=g(r,'ddd:pageurl');const view=key?`https://www.delpher.nl/nl/kranten/view?coll=ddd&identifier=${encodeURIComponent(key)}`:ocr;return [`<a href=\"${view}\">${g(r,'dc:title').slice(0,110)||'(untitled)'}</a>`,g(r,'dc:date'),g(r,'ddd:papertitle')||g(r,'dc:publisher'),g(r,'dc:type'),g(r,'ddd:spatial'),ocr?`<a href=\"${ocr}\">OCR</a>`:'',page?`<a href=\"http://resolver.kb.nl/resolve?urn=${page}:image\">page</a>`:''];});",
+                  "pm.visualizer.set(`<style>table{border-collapse:collapse;font:13px sans-serif}td,th{border:1px solid #ccc;padding:4px 8px;vertical-align:top}th{background:#eee}</style><p><b>{{total}}</b> records</p><table><tr><th>Title</th><th>Date</th><th>Newspaper</th><th>Type</th><th>Area</th><th></th><th></th></tr>{{#each rows}}<tr>{{#each this}}<td>{{{this}}}</td>{{/each}}</tr>{{/each}}</table>`,{rows,total});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": ""
+    },
+    {
+      "name": "Resolver: OCR text & page images",
+      "id": "11757362-8a80-4e8e-86c9-fe2b0233806c",
+      "item": [
+        {
+          "name": "★ Article OCR text",
+          "id": "8d3d609c-48b4-4dd1-be9b-c7ca0d28fc56",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/xml"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_resolver}}/resolve?urn={{article_urn}}:ocr",
+              "host": [
+                "{{kb_resolver}}"
+              ],
+              "path": [
+                "resolve"
+              ],
+              "query": [
+                {
+                  "key": "urn",
+                  "value": "{{article_urn}}:ocr",
+                  "disabled": false,
+                  "description": "metadataKey from the search result + :ocr"
+                }
+              ]
+            },
+            "description": "Full OCR text (XML) of one article."
+          },
+          "response": []
+        },
+        {
+          "name": "Page image (JPEG 2000)",
+          "id": "e82773cf-61b9-47df-9464-f7f925b81e41",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "image/jp2"
+              }
+            ],
+            "url": {
+              "raw": "{{kb_resolver}}/resolve?urn={{page_urn}}:image",
+              "host": [
+                "{{kb_resolver}}"
+              ],
+              "path": [
+                "resolve"
+              ],
+              "query": [
+                {
+                  "key": "urn",
+                  "value": "{{page_urn}}:image",
+                  "disabled": false,
+                  "description": "pageurl from the search result + :image"
+                }
+              ]
+            },
+            "description": "Scanned newspaper page as image/jp2. Postman may not preview JP2; save the response to a file."
+          },
+          "response": []
+        },
+        {
+          "name": "Article on the Delpher website (HTML)",
+          "id": "d075a92f-25d3-4b96-b1a0-a0bcc4ba457f",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/html"
+              }
+            ],
+            "url": {
+              "raw": "{{delpher}}/nl/kranten/view?coll=ddd&identifier={{article_urn}}",
+              "host": [
+                "{{delpher}}"
+              ],
+              "path": [
+                "nl",
+                "kranten",
+                "view"
+              ],
+              "query": [
+                {
+                  "key": "coll",
+                  "value": "ddd",
+                  "disabled": false,
+                  "description": ""
+                },
+                {
+                  "key": "identifier",
+                  "value": "{{article_urn}}",
+                  "disabled": false,
+                  "description": ""
+                }
+              ]
+            },
+            "description": "Human-readable viewer with the highlighted clipping."
+          },
+          "response": []
+        }
+      ],
+      "description": ""
+    }
+  ],
+  "variable": [
+    {
+      "key": "kb_sru",
+      "value": "https://jsru.kb.nl",
+      "type": "string"
+    },
+    {
+      "key": "kb_resolver",
+      "value": "https://resolver.kb.nl",
+      "type": "string"
+    },
+    {
+      "key": "delpher",
+      "value": "https://www.delpher.nl",
+      "type": "string"
+    },
+    {
+      "key": "query",
+      "value": "Bukovsky",
+      "type": "string"
+    },
+    {
+      "key": "phrase",
+      "value": "Groot Becskerek",
+      "type": "string"
+    },
+    {
+      "key": "paper",
+      "value": "Algemeen Dagblad",
+      "type": "string"
+    },
+    {
+      "key": "article_urn",
+      "value": "KBPERS01:002932016:mpeg21:a00108",
+      "type": "string"
+    },
+    {
+      "key": "page_urn",
+      "value": "KBPERS01:002932016:mpeg21:p00009",
+      "type": "string"
+    }
+  ]
+}
